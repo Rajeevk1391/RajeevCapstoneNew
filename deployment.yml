@@ -14,7 +14,7 @@ spec:
     matchLabels:
       app: flask-app
   strategy: 
-  #It uses the image from docker smita0208
+  #It uses the image from docker rajeev1391
   template:
     metadata:
       creationTimestamp: null
@@ -23,7 +23,7 @@ spec:
     #Deployment is named as flask-app
     spec:
       containers:
-      - image: docker.io/smita0208/flask-app:latest4ac30585-3a77-418b-8226-e65e2ca4a00d
+      - image: docker.io/rajeev1391/flask-app:latest4ac30585-3a77-418b-8226-e65e2ca4a00d
         name: flask-app
         ports:
         - containerPort: 80
