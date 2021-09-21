@@ -55,7 +55,7 @@ workflows:
       #publishes docker image to docker hub
       - docker/publish:
           attach-at: './'
-          image: ${DOCKERHUB_USER}/flask-app
+          image: ${DOCKER_USERNAME}/flask-app
           tag: latest${CIRCLE_WORKFLOW_ID}
           context: capston
           requires:
