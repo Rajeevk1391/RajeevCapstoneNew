@@ -1,0 +1,58 @@
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+Login Succeeded
+docker build -f Dockerfileblue  -t ****************/capstoneblue .
+Sending build context to Docker daemon    532kB
+Step 1/3 : FROM nginx:1.21.1
+1.21.1: Pulling from library/nginx
+
+b6cecb98: Pulling fs layer 
+0e6f29b5: Pulling fs layer 
+b0db74e3: Pulling fs layer 
+1a34c55e: Pulling fs layer 
+dce7b89c: Pulling fs layer 
+Digest: sha256:a05b0cdd4fc1be3b224ba9662ebdf98fe44c09c0c9215b45f84344c12867002e
+Status: Downloaded newer image for nginx:1.21.1
+ ---> 822b7ec2aaf2
+Step 2/3 : RUN rm /usr/share/nginx/html/index.html
+ ---> Running in dc3bbc9b6596
+ ---> b9a23acbc85d
+Removing intermediate container dc3bbc9b6596
+Step 3/3 : COPY index-blue.html /usr/share/nginx/html/index.html
+ ---> e070ae4093e0
+Successfully built e070ae4093e0
+Successfully tagged ****************/capstoneblue:latest
+docker tag ****************/capstoneblue ****************/capstoneblue:latest
+docker push ****************/capstoneblue
+The push refers to a repository [docker.io/****************/capstoneblue]
+
+1dc0500c: Preparing 
+ab5d3e33: Preparing 
+4d19ddec: Preparing 
+314e4a4f: Preparing 
+af62a494: Preparing 
+5b50454b: Preparing 
+f2c0d071: Preparing 
+latest: digest: sha256:1c343ad58535564bd94c69c1352e6cd302f0faf6994e15026ed67c693bbb9967 size: 1984
+docker build -f Dockerfilegreen  -t ****************/capstonegreen .
+Sending build context to Docker daemon    532kB
+Step 1/3 : FROM nginx:1.21.1
+ ---> 822b7ec2aaf2
+Step 2/3 : RUN rm /usr/share/nginx/html/index.html
+ ---> Using cache
+ ---> b9a23acbc85d
+Step 3/3 : COPY index-green.html /usr/share/nginx/html/index.html
+ ---> 6f4eaf943a55
+Successfully built 6f4eaf943a55
+Successfully tagged ****************/capstonegreen:latest
+docker tag ****************/capstonegreen ****************/capstonegreen:latest
+docker push ****************/capstonegreen
+The push refers to a repository [docker.io/****************/capstonegreen]
+
+7a5d9910: Preparing 
+ab5d3e33: Preparing 
+4d19ddec: Preparing 
+314e4a4f: Preparing 
+af62a494: Preparing 
+5b50454b: Preparing 
+f2c0d071: Preparing 
+latest: digest: sha256:3462529325c3909b8fb18875f6ed3903a014b5db117403aff598c39bf9621dc5 size: 1984

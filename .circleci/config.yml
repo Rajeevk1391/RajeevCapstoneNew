@@ -1,0 +1,105 @@
+version: 2.1
+orbs:
+  aws-eks: circleci/aws-eks@1.1.0
+  kubernetes: circleci/kubernetes@0.4.0
+jobs:
+  build:
+    docker:
+      - image: python:3.7.3-stretch
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            python --version
+            python3.7 -m venv venv
+            . venv/bin/activate
+            pip install pylint
+            make install
+            # Install hadolint
+            wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+            chmod +x /bin/hadolint
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+      # run lint!
+      - run:
+          name: run lint
+          command: |
+            . venv/bin/activate
+            make lint
+  docker-build-push:
+    docker:
+      # - image: circleci/python:3.7.3
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: build docker image
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASSOWRD
+            make buildpushblue
+            make buildpushgreen
+  kasdeploy:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: yum -y install tar gzip curl wget sudo
+      - run:
+          name: Install EKSCTL and kubectl
+          command: |
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/0.63.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
+            mv /tmp/eksctl /usr/local/bin
+            #sudo cp eksctl /usr/local/bin 
+            echo "eksctl version"
+            eksctl version
+            wget -q https://storage.googleapis.com/kubernetes-release/release/$(wget -q -O - https://storage.googleapis.com/kubernetes-release/release/stable.txt -O -)/bin/linux/amd64/kubectl -O kubectl
+            sudo chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
+
+            sudo chmod +x /usr/local/bin/kubectl
+            # mv kubectl /usr/local/bin
+            ls -l /usr/local/bin/kubectl
+            pwd
+            ls -l
+      - run:
+          name: Create Cluster
+          command: |
+            eksctl create cluster -f ./eks-config.yml
+      - run:
+          name: Deploy blue container
+          command: |
+            kubectl apply -f ./blue.yml
+      - run:
+          name: Check on the status of the ReplicationController using this command
+          command: |
+            kubectl describe replicationcontrollers
+            kubectl describe services bluegreenlb
+      - run:
+          name: Deploy green container
+          command: |
+            kubectl apply -f ./green.yml
+      - run:
+          name: Check on the status of the ReplicationController using this command
+          command: |
+            kubectl describe replicationcontrollers
+            kubectl describe services bluegreenlb
+workflows:
+  default:
+    jobs:
+      - build
+      - docker-build-push:
+          requires: [build]
+      #- kasdeploy:
+       #   requires: [docker-build-push]
