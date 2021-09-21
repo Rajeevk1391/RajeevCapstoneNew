@@ -48,8 +48,8 @@ jobs:
       - run:
           name: build docker image
           command: |
-            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PWD}
-  #          docker login -u $DOCKER_USER -p $DOCKER_PASSOWRD
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
+  #         docker login -u $DOCKER_USER -p $DOCKER_PASSOWRD
             make buildpushblue
             make buildpushgreen
   kasdeploy:
