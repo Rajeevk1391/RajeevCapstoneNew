@@ -101,5 +101,5 @@ workflows:
       - build
       - docker-build-push:
           requires: [build]
-      #- kasdeploy:
-       #   requires: [docker-build-push]
+      - kasdeploy:
+         requires: [docker-build-push]
