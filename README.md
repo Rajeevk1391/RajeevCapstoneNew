@@ -1,27 +1,29 @@
-[![CircleCI](https://circleci.com/gh/Mohanadmahmoud98/devops-capstone/tree/main.svg?style=svg)](https://circleci.com/gh/Mohanadmahmoud98/devops-capstone/tree/main)
-# cloud-devops-capstone
-> In this project, I applied my skills and knowledge which was developed throughout the Cloud DevOps Nanodegree program.
+# DevopsCapstone
+My AWS Devops capstone project
 
-## Project Tasks:
+In this project I have applied the skills and knowledge which were developed throughout the Cloud DevOps Nanodegree program. These include:
 
-* Working in AWS
-* Using Circlci to implement Continuous Integration and Continuous Deployment
-* Building pipelines
-* Building Kubernetes clusters
-* Building Docker containers in pipelines
-## About Project: 
+1) Working in AWS
+2) Using Jenkins or Circle CI to implement Continuous Integration and Continuous Deployment
+3) Building pipelines
+4) Working with Ansible and CloudFormation to deploy clusters
+5) Building Kubernetes clusters
+6) Building Docker containers in pipelines
 
-> I created a CI/CD pipeline for a basic website that deploys to a cluster in AWS EKS which is Blue/Green Deployment.
+I have developed a CI/CD pipeline for a flask applications with rolling deployment. I have also included typographical checking (aka “linting”).
 
-## The files included are:
-```sh
-* screenshot : Screenshot the result of deploy.
-* .circleci : config for Creating Pipeline
-* Dockerfile : Dockerfile for building the image 
-* green.yml : Create a replication controller green pod and service
-* blue.yml : Create a replication controller blue pod and service
-* index-blue.html : Web site Index file for blue docker image.
-* index-green.html : Web site Index file for blue docker image.
-```
-## Run the project:
-using Circleci
+After completing Continuous Integration I have set up Continuous Deployment, which includes:
+
+Pushing the built Docker container(s) to the Docker repository; and
+Deploying these Docker container(s) to a small Kubernetes cluster. I have used AWS Kubernetes as a Service and eksctl. I ran these from within Circle CI as an independent pipeline.
+I have used rolling deployment for the Docker application which is a very simple hello-world flask application.
+
+Initial Setup for the project.
+
+1) Install kubectl
+2) Install eksctl
+3) Install aws cli
+4) AWS Configure
+5) Create using eksctl create cluster command.
+6) Build Circle ci pipelines.
+7) expose the service.

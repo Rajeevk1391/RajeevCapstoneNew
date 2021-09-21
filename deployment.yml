@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+#Defining metadata of the deployment using the image present in the docker hub
+metadata:
+  labels:
+    app: flask-app
+    version: latest4ac30585-3a77-418b-8226-e65e2ca4a00d
+  name: flask-app
+  namespace: flask-app
+#It will use the default rolling update strategy and replica is 2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask-app
+  strategy: 
+  #It uses the image from docker smita0208
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: flask-app
+    #Deployment is named as flask-app
+    spec:
+      containers:
+      - image: docker.io/smita0208/flask-app:latest4ac30585-3a77-418b-8226-e65e2ca4a00d
+        name: flask-app
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}

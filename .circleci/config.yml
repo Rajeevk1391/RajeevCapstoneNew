@@ -1,105 +1,75 @@
 version: 2.1
+
 orbs:
-  aws-eks: circleci/aws-eks@1.1.0
-  kubernetes: circleci/kubernetes@0.4.0
+  docker: circleci/docker@1.5.0
+  aws-eks: circleci/aws-eks@1.0.3
+  kubernetes: circleci/kubernetes@0.11.2
+
+# Defining my jobs
 jobs:
-  build:
+  build-flask: #Docker build job which uses make file to install and lint
     docker:
       - image: python:3.7.3-stretch
-
     working_directory: ~/repo
-
+      
     steps:
       - checkout
+      - run:
+          name: verify the system
+          command: |
+            ls -Rla ~/
+      
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "requirements.txt" }}
-            # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
       - run:
           name: install dependencies
           command: |
-            python --version
-            python3.7 -m venv venv
+            python3 -m venv venv
             . venv/bin/activate
-            pip install pylint
             make install
-            # Install hadolint
             wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
             chmod +x /bin/hadolint
+            
       - save_cache:
           paths:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
-      # run lint!
       - run:
           name: run lint
           command: |
             . venv/bin/activate
             make lint
-  docker-build-push:
-    docker:
-      # - image: circleci/python:3.7.3
-    machine: true
-    steps:
-      - checkout
-      - run:
-          name: build docker image
-          command: |
-            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PWD} 
-            make buildpushblue
-            make buildpushgreen
-  kasdeploy:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run: yum -y install tar gzip curl wget sudo
-      - run:
-          name: Install EKSCTL and kubectl
-          command: |
-            curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/0.63.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
-            mv /tmp/eksctl /usr/local/bin
-            #sudo cp eksctl /usr/local/bin 
-            echo "eksctl version"
-            eksctl version
-            wget -q https://storage.googleapis.com/kubernetes-release/release/$(wget -q -O - https://storage.googleapis.com/kubernetes-release/release/stable.txt -O -)/bin/linux/amd64/kubectl -O kubectl
-            sudo chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
 
-            sudo chmod +x /usr/local/bin/kubectl
-            # mv kubectl /usr/local/bin
-            ls -l /usr/local/bin/kubectl
-            pwd
-            ls -l
-      - run:
-          name: Create Cluster
-          command: |
-            eksctl create cluster -f ./eks-config.yml
-      - run:
-          name: Deploy blue container
-          command: |
-            kubectl apply -f ./blue.yml
-      - run:
-          name: Check on the status of the ReplicationController using this command
-          command: |
-            kubectl describe replicationcontrollers
-            kubectl describe services bluegreenlb
-      - run:
-          name: Deploy green container
-          command: |
-            kubectl apply -f ./green.yml
-      - run:
-          name: Check on the status of the ReplicationController using this command
-          command: |
-            kubectl describe replicationcontrollers
-            kubectl describe services bluegreenlb
+# this workflow builds docker image ,pushes to docker hub and uses rolling update to update image          
 workflows:
-  default:
+  build:
     jobs:
-      - build
-      - docker-build-push:
-          requires: [build]
-      - kasdeploy:
-         requires: [docker-build-push]
+      - build-flask
+      - docker/hadolint:
+          trusted-registries: docker.io
+          requires: [build-flask]
+      #publishes docker image to docker hub
+      - docker/publish:
+          attach-at: './'
+          image: ${DOCKERHUB_USER}/flask-app
+          tag: latest${CIRCLE_WORKFLOW_ID}
+          context: capstone
+          requires:
+            - docker/hadolint
+      #updates container image using rolling update strategy
+      - aws-eks/update-container-image:
+          aws-region: us-west-2
+          cluster-name: capstone
+          container-image-updates: flask-app=docker.io/${DOCKERHUB_USER}/flask-app:latest${CIRCLE_WORKFLOW_ID}
+          get-rollout-status: true
+          namespace: flask-app
+          resource-name: deployment/flask-app
+          record: true
+          show-kubectl-command: true
+          watch-timeout: 10m
+          requires:
+            - "docker/publish"
