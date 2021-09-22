@@ -1,34 +1,39 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: deployment
+#Defining metadata of the deployment using the image present in the docker hub
 metadata:
-  name: flask-app
   labels:
     app: flask-app
-  namespace: default
+    version: "2.0"
+    name: flask-app
+#  namespace: default
+  namespace: flask-app
+#It will use the default rolling update strategy and replica is 2
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: flask-app
-  strategy:
-    rollingUpdate:
-      maxSurge: 50%
-      maxUnavailable: 50%
-    type: RollingUpdate
+  strategy: 
+  #It uses the image from docker rajeev1391
   template:
     metadata:
+      creationTimestamp: null
       labels:
         app: flask-app
+    #Deployment is named as flask-app
     spec:
       containers:
-        - image: rajeev1391/capston:2.0
-          imagePullPolicy: Always
-          name: flask-app
-          ports:
-            - containerPort: 80
+      - image: docker.io/rajeev1391/flask-app:2.0
+        name: flask-app
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
 
 
----
+
+#---
 apiVersion: v1
 kind: Service
 metadata:

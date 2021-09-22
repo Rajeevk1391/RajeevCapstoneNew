@@ -1,3 +1,4 @@
+   
 version: 2.1
 
 orbs:
@@ -43,7 +44,6 @@ jobs:
           command: |
             . venv/bin/activate
             make lint
-
 # this workflow builds docker image ,pushes to docker hub and uses rolling update to update image          
 workflows:
   build:
@@ -54,26 +54,20 @@ workflows:
           requires: [build-flask]
       #publishes docker image to docker hub
       - docker/publish:
-   #       command : docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PWD}
           attach-at: './'
-          image: ${DOCKER_USERNAME}/flask-app
-          tag: "2.0"
-    #      context: capstone
+          image: ${DOCKERHUB_USER}/flask-app
+          tag: "1.0"
+          context: capstone
           requires:
             - docker/hadolint
       #updates container image using rolling update strategy
-      - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: capstone
-          install-kubectl: true
-      - kubernetes/create-or-update-resource:
-#      - kubernetes/create-or-update-resource:
+      - aws-eks/update-container-image:
           aws-region: us-west-2
           cluster-name: capstone
-          container-image-updates: flask-app=docker.io/${DOCKER_USERNAME}/flask-app:2.0
+          container-image-updates: flask-app=docker.io/${DOCKERHUB_USER}/flask-app:1.0
           get-rollout-status: true
           namespace: flask-app
-          resource-file-path: "deployment.yml"
-          resource-name: "deployment/flask-app"
+          resource-name: deployment/flask-app
           record: true
           show-kubectl-command: true
           watch-timeout: 10m
