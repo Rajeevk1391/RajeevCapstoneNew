@@ -62,7 +62,11 @@ workflows:
           requires:
             - docker/hadolint
       #updates container image using rolling update strategy
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: capstone
+          install-kubectl: true
       - kubernetes/create-or-update-resource:
+#      - kubernetes/create-or-update-resource:
           aws-region: us-west-2
           cluster-name: capstone
           container-image-updates: flask-app=docker.io/${DOCKER_USERNAME}/flask-app:2.0
