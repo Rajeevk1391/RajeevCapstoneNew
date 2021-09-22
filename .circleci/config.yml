@@ -56,7 +56,7 @@ workflows:
       - docker/publish:
           attach-at: './'
           image: ${DOCKER_USERNAME}/flask-app
-          tag: latest${CIRCLE_WORKFLOW_ID}
+          tag: 1.0
           context: capstone
           requires:
             - docker/hadolint
@@ -64,7 +64,7 @@ workflows:
       - aws-eks/update-container-image:
           aws-region: us-west-2
           cluster-name: capstone
-          container-image-updates: flask-app=docker.io/${DOCKER_USERNAME}/flask-app:latest${CIRCLE_WORKFLOW_ID}
+          container-image-updates: flask-app=docker.io/${DOCKER_USERNAME}/flask-app:1.0
           get-rollout-status: true
           namespace: flask-app
           resource-name: deployment/flask-app

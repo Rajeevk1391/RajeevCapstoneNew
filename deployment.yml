@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   labels:
     app: flask-app
-    version: latest4ac30585-3a77-418b-8226-e65e2ca4a00d
+    version: 1.0
   name: flask-app
   namespace: flask-app
 #It will use the default rolling update strategy and replica is 2
@@ -23,7 +23,7 @@ spec:
     #Deployment is named as flask-app
     spec:
       containers:
-      - image: docker.io/rajeev1391/flask-app:latest4ac30585-3a77-418b-8226-e65e2ca4a00d
+      - image: docker.io/rajeev1391/flask-app:1.0
         name: flask-app
         ports:
         - containerPort: 80
