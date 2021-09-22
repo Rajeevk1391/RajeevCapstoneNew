@@ -56,7 +56,7 @@ workflows:
       - docker/publish:
           attach-at: './'
           image: ${DOCKER_USERNAME}/flask-app
-          tag: 1.0
+          tag: "1.0"
           context: capstone
           requires:
             - docker/hadolint

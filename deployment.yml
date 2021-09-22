@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   labels:
     app: flask-app
-    version: 1.0
+    version: "1.0"
   name: flask-app
   namespace: flask-app
 #It will use the default rolling update strategy and replica is 2
