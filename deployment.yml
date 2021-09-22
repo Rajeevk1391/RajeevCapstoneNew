@@ -4,7 +4,7 @@ kind: deployment
 metadata:
   labels:
     app: flask-app
-    version: "2.0"
+    version: "1.0"
     name: flask-app
 #  namespace: default
   namespace: flask-app
@@ -24,7 +24,7 @@ spec:
     #Deployment is named as flask-app
     spec:
       containers:
-      - image: docker.io/rajeev1391/flask-app:2.0
+      - image: docker.io/rajeev1391/flask-app:1.0
         name: flask-app
         ports:
         - containerPort: 80
