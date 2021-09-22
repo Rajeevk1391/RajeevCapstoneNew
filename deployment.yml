@@ -6,7 +6,8 @@ metadata:
     app: flask-app
     version: "1.0"
   name: flask-app
-  namespace: flask-app
+  namespace: default
+#  namespace: flask-app
 #It will use the default rolling update strategy and replica is 2
 spec:
   replicas: 2
