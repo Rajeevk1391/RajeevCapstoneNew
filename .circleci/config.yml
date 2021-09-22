@@ -68,6 +68,7 @@ workflows:
           container-image-updates: flask-app=docker.io/${DOCKER_USERNAME}/flask-app:1.0
           get-rollout-status: true
           namespace: flask-app
+          resource-file-path: deployment.yml
           resource-name: deployment/flask-app
           record: true
           show-kubectl-command: true

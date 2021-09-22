@@ -5,9 +5,9 @@ metadata:
   labels:
     app: flask-app
     version: "1.0"
-  name: flask-app
-  namespace: default
-#  namespace: flask-app
+    name: flask-app
+#  namespace: default
+  namespace: flask-app
 #It will use the default rolling update strategy and replica is 2
 spec:
   replicas: 2
@@ -30,3 +30,21 @@ spec:
         - containerPort: 80
         resources: {}
 status: {}
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-app
+  labels:
+    app: flask-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: flask-app
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
