@@ -57,7 +57,7 @@ workflows:
           attach-at: './'
           image: ${DOCKER_USERNAME}/flask-app
           tag: "1.0"
-          context: capstone
+   #       context: capstone
           requires:
             - docker/hadolint
       #updates container image using rolling update strategy
