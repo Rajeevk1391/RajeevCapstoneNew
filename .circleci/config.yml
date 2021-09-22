@@ -54,6 +54,7 @@ workflows:
           requires: [build-flask]
       #publishes docker image to docker hub
       - docker/publish:
+          command : docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PWD}
           attach-at: './'
           image: ${DOCKER_USERNAME}/flask-app
           tag: "1.0"
